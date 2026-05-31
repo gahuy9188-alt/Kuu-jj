@@ -1,0 +1,2888 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>NICUE VN – NC TOOLS | Công Cụ Free Fire #1 Việt Nam</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Orbitron:wght@400;700;900&family=Be+Vietnam+Pro:wght@300;400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --black: #080810;
+        --deep: #0d0d1a;
+        --panel: #111122;
+        --card: #161628;
+        --border: #2a2a4a;
+        --fire: #ff6a00;
+        --fire2: #ff9500;
+        --gold: #ffd060;
+        --gold2: #ffb800;
+        --red: #ff2244;
+        --cyan: #00e5ff;
+        --white: #f0f0ff;
+        --muted: #7070a0;
+        --glow-fire: 0 0 20px #ff6a0088, 0 0 60px #ff6a0044;
+        --glow-gold: 0 0 20px #ffd06088, 0 0 60px #ffd06033;
+        --ff-display: "Orbitron", sans-serif;
+        --ff-title: "Rajdhani", sans-serif;
+        --ff-body: "Be Vietnam Pro", sans-serif;
+      }
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      html {
+        scroll-behavior: smooth;
+      }
+      body {
+        background: var(--black);
+        color: var(--white);
+        font-family: var(--ff-body);
+        overflow-x: hidden;
+        cursor: crosshair;
+      }
+      ::-webkit-scrollbar {
+        width: 6px;
+      }
+      ::-webkit-scrollbar-track {
+        background: var(--deep);
+      }
+      ::-webkit-scrollbar-thumb {
+        background: var(--fire);
+        border-radius: 3px;
+      }
+      a {
+        color: inherit;
+        text-decoration: none;
+      }
+      img {
+        display: block;
+        max-width: 100%;
+      }
+      button {
+        cursor: pointer;
+        border: none;
+        font-family: var(--ff-title);
+      }
+
+      /* LOADER */
+      #loader {
+        position: fixed;
+        inset: 0;
+        background: var(--black);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        z-index: 9999;
+        transition:
+          opacity 0.8s ease,
+          visibility 0.8s ease;
+      }
+      #loader.hidden {
+        opacity: 0;
+        visibility: hidden;
+        pointer-events: none;
+      }
+      .loader-logo {
+        font-family: var(--ff-display);
+        font-size: clamp(2.5rem, 8vw, 5rem);
+        font-weight: 900;
+        letter-spacing: 4px;
+        background: linear-gradient(
+          135deg,
+          var(--fire),
+          var(--gold),
+          var(--fire2)
+        );
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        animation: logoFlare 0.6s ease forwards;
+        filter: drop-shadow(0 0 30px #ff6a0099);
+      }
+      @keyframes logoFlare {
+        0% {
+          opacity: 0;
+          transform: scale(0.5) translateY(30px);
+        }
+        60% {
+          opacity: 1;
+          transform: scale(1.08) translateY(-4px);
+          filter: drop-shadow(0 0 50px #ff6a00cc);
+        }
+        100% {
+          opacity: 1;
+          transform: scale(1) translateY(0);
+          filter: drop-shadow(0 0 30px #ff6a0099);
+        }
+      }
+      .loader-sub {
+        font-family: var(--ff-title);
+        font-size: 1rem;
+        letter-spacing: 8px;
+        text-transform: uppercase;
+        color: var(--muted);
+        margin-top: 0.5rem;
+        animation: fadeSlide 0.8s 0.4s ease both;
+      }
+      .loader-bar-wrap {
+        width: 260px;
+        height: 3px;
+        background: var(--border);
+        border-radius: 2px;
+        margin-top: 2rem;
+        overflow: hidden;
+      }
+      .loader-bar {
+        height: 100%;
+        background: linear-gradient(90deg, var(--fire), var(--gold));
+        border-radius: 2px;
+        animation: loadBar 1.8s ease forwards;
+        box-shadow: 0 0 12px var(--fire);
+      }
+      @keyframes loadBar {
+        from {
+          width: 0;
+        }
+        to {
+          width: 100%;
+        }
+      }
+
+      /* CANVAS & CURSOR */
+      #particles-canvas {
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        z-index: 0;
+      }
+      .cursor-glow {
+        position: fixed;
+        width: 300px;
+        height: 300px;
+        border-radius: 50%;
+        pointer-events: none;
+        z-index: 1;
+        transform: translate(-50%, -50%);
+        background: radial-gradient(
+          circle,
+          rgba(255, 106, 0, 0.07) 0%,
+          transparent 70%
+        );
+      }
+
+      /* LAYOUT */
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 1.5rem;
+      }
+      section {
+        position: relative;
+        z-index: 2;
+      }
+      .section-label {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.6rem;
+        font-family: var(--ff-title);
+        font-size: 0.8rem;
+        letter-spacing: 4px;
+        text-transform: uppercase;
+        color: var(--fire);
+        padding: 0.35rem 1rem;
+        border: 1px solid var(--fire);
+        border-radius: 2px;
+        margin-bottom: 1rem;
+      }
+      .section-title {
+        font-family: var(--ff-display);
+        font-size: clamp(1.8rem, 5vw, 3rem);
+        font-weight: 900;
+        line-height: 1.1;
+        letter-spacing: 1px;
+      }
+      .gradient-text {
+        background: linear-gradient(135deg, var(--fire), var(--gold2));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+      @keyframes fadeSlide {
+        from {
+          opacity: 0;
+          transform: translateY(16px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+      .reveal {
+        opacity: 0;
+        transform: translateY(40px);
+        transition:
+          opacity 0.7s ease,
+          transform 0.7s ease;
+      }
+      .reveal.visible {
+        opacity: 1;
+        transform: translateY(0);
+      }
+
+      /* NAV */
+      nav {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 100;
+        padding: 1rem 0;
+        background: linear-gradient(
+          180deg,
+          rgba(8, 8, 16, 0.98) 0%,
+          transparent 100%
+        );
+        backdrop-filter: blur(10px);
+        border-bottom: 1px solid rgba(255, 106, 0, 0.15);
+      }
+      .nav-inner {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 1.5rem;
+      }
+      .nav-logo {
+        font-family: var(--ff-display);
+        font-size: 1.4rem;
+        font-weight: 900;
+        letter-spacing: 3px;
+        background: linear-gradient(135deg, var(--fire), var(--gold));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        filter: drop-shadow(0 0 8px #ff6a0066);
+      }
+      .nav-links {
+        display: flex;
+        align-items: center;
+        gap: 2rem;
+        list-style: none;
+      }
+      .nav-links a {
+        font-family: var(--ff-title);
+        font-size: 0.95rem;
+        font-weight: 600;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        color: var(--muted);
+        transition: color 0.3s;
+        position: relative;
+      }
+      .nav-links a::after {
+        content: "";
+        position: absolute;
+        bottom: -3px;
+        left: 0;
+        right: 0;
+        height: 1px;
+        background: var(--fire);
+        transform: scaleX(0);
+        transform-origin: left;
+        transition: transform 0.3s;
+      }
+      .nav-links a:hover {
+        color: var(--fire);
+      }
+      .nav-links a:hover::after {
+        transform: scaleX(1);
+      }
+      .nav-cta {
+        font-family: var(--ff-title);
+        font-size: 0.85rem;
+        font-weight: 700;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        color: var(--black);
+        background: linear-gradient(135deg, var(--fire), var(--gold2));
+        padding: 0.55rem 1.4rem;
+        border-radius: 2px;
+        transition:
+          box-shadow 0.3s,
+          transform 0.2s;
+      }
+      .nav-cta:hover {
+        box-shadow: var(--glow-fire);
+        transform: translateY(-1px);
+      }
+
+      /* HERO */
+      #hero {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        padding: 8rem 1.5rem 4rem;
+        position: relative;
+        overflow: hidden;
+      }
+      .hero-bg {
+        position: absolute;
+        inset: 0;
+        background:
+          radial-gradient(
+            ellipse 80% 60% at 50% 100%,
+            rgba(255, 106, 0, 0.18) 0%,
+            transparent 70%
+          ),
+          radial-gradient(
+            ellipse 60% 40% at 80% 20%,
+            rgba(255, 176, 0, 0.06) 0%,
+            transparent 60%
+          ),
+          radial-gradient(
+            ellipse 100% 80% at 20% 80%,
+            rgba(255, 34, 68, 0.05) 0%,
+            transparent 60%
+          );
+      }
+      .hero-grid {
+        position: absolute;
+        inset: 0;
+        background-image:
+          linear-gradient(rgba(255, 106, 0, 0.04) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(255, 106, 0, 0.04) 1px, transparent 1px);
+        background-size: 60px 60px;
+        mask-image: radial-gradient(
+          ellipse 80% 80% at 50% 50%,
+          black,
+          transparent
+        );
+      }
+      .hero-content {
+        position: relative;
+        z-index: 2;
+        max-width: 860px;
+      }
+      .hero-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-family: var(--ff-title);
+        font-size: 0.75rem;
+        letter-spacing: 5px;
+        text-transform: uppercase;
+        color: var(--fire);
+        border: 1px solid rgba(255, 106, 0, 0.4);
+        padding: 0.4rem 1.2rem;
+        border-radius: 2px;
+        margin-bottom: 1.5rem;
+        animation: fadeSlide 0.8s 2s ease both;
+        background: rgba(255, 106, 0, 0.05);
+      }
+      .hero-badge-dot {
+        width: 6px;
+        height: 6px;
+        background: var(--fire);
+        border-radius: 50%;
+        animation: blink 1.5s ease infinite;
+      }
+      @keyframes blink {
+        0%,
+        100% {
+          opacity: 1;
+        }
+        50% {
+          opacity: 0.2;
+        }
+      }
+      .hero-title {
+        font-family: var(--ff-display);
+        font-size: clamp(3rem, 9vw, 7rem);
+        font-weight: 900;
+        line-height: 0.95;
+        letter-spacing: -2px;
+        animation: fadeSlide 0.9s 2.2s ease both;
+      }
+      .hero-title span {
+        display: block;
+      }
+      .hero-title .line1 {
+        color: var(--white);
+      }
+      .hero-title .line2 {
+        background: linear-gradient(
+          135deg,
+          var(--fire) 0%,
+          var(--gold) 60%,
+          var(--fire2) 100%
+        );
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        filter: drop-shadow(0 0 30px rgba(255, 106, 0, 0.5));
+      }
+      .hero-tagline {
+        font-size: clamp(1rem, 2.5vw, 1.3rem);
+        color: var(--muted);
+        margin: 1.5rem auto 2.5rem;
+        max-width: 600px;
+        line-height: 1.6;
+        animation: fadeSlide 0.9s 2.4s ease both;
+        font-weight: 300;
+      }
+      .hero-tagline strong {
+        color: var(--gold2);
+        font-weight: 600;
+      }
+      .hero-ctas {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 1rem;
+        animation: fadeSlide 0.9s 2.6s ease both;
+      }
+      .btn-primary {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.6rem;
+        font-family: var(--ff-title);
+        font-size: 1.05rem;
+        font-weight: 700;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        color: var(--black);
+        background: linear-gradient(135deg, var(--fire), var(--gold2));
+        padding: 1rem 2.4rem;
+        border-radius: 3px;
+        position: relative;
+        overflow: hidden;
+        transition:
+          transform 0.2s,
+          box-shadow 0.3s;
+      }
+      .btn-primary::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 60%;
+        height: 100%;
+        background: linear-gradient(
+          90deg,
+          transparent,
+          rgba(255, 255, 255, 0.3),
+          transparent
+        );
+        transition: left 0.5s;
+      }
+      .btn-primary:hover::before {
+        left: 150%;
+      }
+      .btn-primary:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 40px rgba(255, 106, 0, 0.5);
+      }
+      .btn-secondary {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.6rem;
+        font-family: var(--ff-title);
+        font-size: 1rem;
+        font-weight: 600;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        color: var(--fire);
+        border: 1px solid var(--fire);
+        padding: 0.95rem 2rem;
+        border-radius: 3px;
+        background: rgba(255, 106, 0, 0.06);
+        transition:
+          background 0.3s,
+          box-shadow 0.3s;
+      }
+      .btn-secondary:hover {
+        background: rgba(255, 106, 0, 0.15);
+        box-shadow: var(--glow-fire);
+      }
+      .hero-stats {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 3rem;
+        flex-wrap: wrap;
+        margin-top: 4rem;
+        padding-top: 2.5rem;
+        border-top: 1px solid var(--border);
+        animation: fadeSlide 0.9s 2.8s ease both;
+      }
+      .hero-stat-item {
+        text-align: center;
+      }
+      .hero-stat-num {
+        font-family: var(--ff-display);
+        font-size: 2rem;
+        font-weight: 900;
+        background: linear-gradient(135deg, var(--fire), var(--gold));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+      .hero-stat-label {
+        font-size: 0.75rem;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        color: var(--muted);
+        margin-top: 0.2rem;
+      }
+
+      /* DONATE */
+      #donate {
+        padding: 6rem 0;
+        background: linear-gradient(
+          180deg,
+          transparent 0%,
+          rgba(255, 106, 0, 0.04) 50%,
+          transparent 100%
+        );
+      }
+      .donate-inner {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 4rem;
+        align-items: center;
+      }
+      .donate-left .section-label {
+        margin-bottom: 1.5rem;
+      }
+      .donate-title {
+        font-family: var(--ff-display);
+        font-size: clamp(1.8rem, 4vw, 2.8rem);
+        font-weight: 900;
+        line-height: 1.15;
+        margin-bottom: 1.5rem;
+      }
+      .donate-desc {
+        color: var(--muted);
+        line-height: 1.8;
+        margin-bottom: 2rem;
+        font-size: 0.95rem;
+      }
+      .donate-desc strong {
+        color: var(--gold2);
+        font-weight: 600;
+      }
+      .bank-info {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+      }
+      .bank-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0.5rem 0;
+        border-bottom: 1px solid var(--border);
+      }
+      .bank-row:last-child {
+        border-bottom: none;
+        padding-bottom: 0;
+      }
+      .bank-row:first-child {
+        padding-top: 0;
+      }
+      .bank-label {
+        font-size: 0.8rem;
+        color: var(--muted);
+        letter-spacing: 1px;
+        text-transform: uppercase;
+      }
+      .bank-value {
+        font-family: var(--ff-title);
+        font-weight: 600;
+        font-size: 1rem;
+        color: var(--white);
+      }
+      .btn-copy {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        background: var(--card);
+        border: 1px solid var(--border);
+        color: var(--gold2);
+        font-family: var(--ff-title);
+        font-size: 0.85rem;
+        font-weight: 600;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        padding: 0.75rem 1.5rem;
+        border-radius: 3px;
+        transition: all 0.3s;
+      }
+      .btn-copy:hover {
+        border-color: var(--gold2);
+        background: rgba(255, 208, 96, 0.08);
+        box-shadow: var(--glow-gold);
+      }
+      .btn-copy.copied {
+        border-color: #00cc66;
+        color: #00cc66;
+      }
+      .donate-right {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 1.5rem;
+      }
+      .qr-frame {
+        position: relative;
+        width: 280px;
+        height: 280px;
+        border-radius: 12px;
+        padding: 16px;
+        background: var(--card);
+        border: 2px solid var(--fire);
+        animation: qrPulse 2.5s ease infinite;
+        transition: transform 0.3s;
+      }
+      @keyframes qrPulse {
+        0%,
+        100% {
+          box-shadow:
+            0 0 0 4px rgba(255, 106, 0, 0.1),
+            0 0 20px #ff6a0088,
+            0 0 60px #ff6a0044;
+        }
+        50% {
+          box-shadow:
+            0 0 0 8px rgba(255, 106, 0, 0.15),
+            0 0 40px #ff6a00aa,
+            0 0 80px #ff6a0066;
+        }
+      }
+      .qr-frame:hover {
+        transform: scale(1.04);
+      }
+      .qr-placeholder {
+        width: 100%;
+        height: 100%;
+        background: white;
+        border-radius: 8px;
+        overflow: hidden;
+        display: grid;
+        place-items: center;
+      }
+      .qr-placeholder img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border-radius: 8px;
+      }
+      .qr-sparkles {
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        overflow: hidden;
+        border-radius: 12px;
+      }
+      .sparkle {
+        position: absolute;
+        width: 4px;
+        height: 4px;
+        background: var(--gold);
+        border-radius: 50%;
+        animation: sparkleFloat linear infinite;
+        opacity: 0;
+      }
+      @keyframes sparkleFloat {
+        0% {
+          opacity: 0;
+          transform: translateY(0) scale(0);
+        }
+        20% {
+          opacity: 1;
+          transform: translateY(-20px) scale(1);
+        }
+        80% {
+          opacity: 1;
+        }
+        100% {
+          opacity: 0;
+          transform: translateY(-80px) scale(0.5);
+        }
+      }
+      .qr-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-family: var(--ff-title);
+        font-size: 0.85rem;
+        font-weight: 700;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        color: var(--gold2);
+        border: 1px solid var(--gold2);
+        padding: 0.5rem 1.2rem;
+        border-radius: 2px;
+        background: rgba(255, 208, 96, 0.06);
+        animation: badgePulse 2s ease infinite;
+      }
+      @keyframes badgePulse {
+        0%,
+        100% {
+          opacity: 1;
+        }
+        50% {
+          opacity: 0.7;
+        }
+      }
+
+      /* TRUST */
+      #trust {
+        padding: 6rem 0;
+        background: var(--deep);
+        border-top: 1px solid var(--border);
+        border-bottom: 1px solid var(--border);
+      }
+      .trust-header {
+        text-align: center;
+        margin-bottom: 4rem;
+      }
+      .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 1.5rem;
+        margin-bottom: 4rem;
+      }
+      .stat-card {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 2rem 1.5rem;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+        transition:
+          border-color 0.3s,
+          transform 0.3s;
+      }
+      .stat-card::before {
+        content: "";
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 2px;
+        background: linear-gradient(90deg, var(--fire), var(--gold));
+        transform: scaleX(0);
+        transform-origin: left;
+        transition: transform 0.5s ease;
+      }
+      .stat-card:hover {
+        border-color: var(--fire);
+        transform: translateY(-4px);
+      }
+      .stat-card:hover::before {
+        transform: scaleX(1);
+      }
+      .stat-icon {
+        font-size: 2.5rem;
+        margin-bottom: 1rem;
+        display: block;
+      }
+      .stat-number {
+        font-family: var(--ff-display);
+        font-size: 2.4rem;
+        font-weight: 900;
+        background: linear-gradient(135deg, var(--fire), var(--gold));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        line-height: 1;
+        margin-bottom: 0.5rem;
+      }
+      .stat-label {
+        font-family: var(--ff-title);
+        font-size: 0.8rem;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        color: var(--muted);
+      }
+      .rating-section {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 3rem;
+        flex-wrap: wrap;
+        margin-bottom: 3rem;
+      }
+      .rating-item {
+        text-align: center;
+      }
+      .stars {
+        display: flex;
+        gap: 4px;
+        justify-content: center;
+        margin-bottom: 0.5rem;
+      }
+      .star {
+        font-size: 1.5rem;
+        color: var(--border);
+        transition: color 0.3s;
+      }
+      .star.active {
+        color: var(--gold2);
+        text-shadow: 0 0 10px var(--gold2);
+      }
+      .rating-label {
+        font-size: 0.8rem;
+        color: var(--muted);
+        letter-spacing: 1px;
+        text-transform: uppercase;
+      }
+      .rating-score {
+        font-family: var(--ff-display);
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--gold2);
+      }
+      .badges-row {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 1rem;
+      }
+      .trust-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.6rem;
+        font-family: var(--ff-title);
+        font-size: 0.85rem;
+        font-weight: 600;
+        letter-spacing: 1px;
+        padding: 0.65rem 1.4rem;
+        border-radius: 3px;
+        border: 1px solid;
+        transition: all 0.3s;
+      }
+      .trust-badge.fire {
+        color: var(--fire);
+        border-color: rgba(255, 106, 0, 0.4);
+        background: rgba(255, 106, 0, 0.06);
+      }
+      .trust-badge.gold {
+        color: var(--gold2);
+        border-color: rgba(255, 208, 96, 0.4);
+        background: rgba(255, 208, 96, 0.06);
+      }
+      .trust-badge.cyan {
+        color: var(--cyan);
+        border-color: rgba(0, 229, 255, 0.4);
+        background: rgba(0, 229, 255, 0.06);
+      }
+      .trust-badge.green {
+        color: #00dd88;
+        border-color: rgba(0, 221, 136, 0.4);
+        background: rgba(0, 221, 136, 0.06);
+      }
+      .trust-badge:hover {
+        transform: translateY(-2px);
+      }
+      .progress-row {
+        max-width: 700px;
+        margin: 3rem auto 0;
+      }
+      .progress-item {
+        margin-bottom: 1.2rem;
+      }
+      .progress-header {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 0.4rem;
+      }
+      .progress-label {
+        font-size: 0.85rem;
+        color: var(--muted);
+      }
+      .progress-value {
+        font-family: var(--ff-display);
+        font-size: 0.85rem;
+        color: var(--gold2);
+      }
+      .progress-track {
+        height: 6px;
+        background: var(--border);
+        border-radius: 3px;
+        overflow: hidden;
+      }
+      .progress-fill {
+        height: 100%;
+        border-radius: 3px;
+        background: linear-gradient(90deg, var(--fire), var(--gold));
+        box-shadow: 0 0 8px var(--fire);
+        transform: scaleX(0);
+        transform-origin: left;
+        transition: transform 1.5s cubic-bezier(0.16, 1, 0.3, 1);
+      }
+      .progress-fill.animate {
+        transform: scaleX(1);
+      }
+
+      /* NC TOOLS SECTION */
+      #skins {
+        padding: 6rem 0;
+      }
+      .skins-header {
+        text-align: center;
+        margin-bottom: 3rem;
+      }
+      .nc-app-card {
+        display: grid;
+        grid-template-columns: auto 1fr auto;
+        gap: 2.5rem;
+        align-items: start;
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        padding: 2.5rem;
+        position: relative;
+        overflow: hidden;
+        transition:
+          border-color 0.3s,
+          box-shadow 0.3s;
+      }
+      .nc-app-card::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(
+          ellipse 60% 80% at 50% 100%,
+          rgba(255, 106, 0, 0.06),
+          transparent
+        );
+        pointer-events: none;
+      }
+      .nc-app-card::after {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 2px;
+        background: linear-gradient(
+          90deg,
+          transparent,
+          var(--fire),
+          var(--gold),
+          var(--fire),
+          transparent
+        );
+      }
+      .nc-app-card:hover {
+        border-color: rgba(255, 106, 0, 0.4);
+        box-shadow: 0 20px 80px rgba(255, 106, 0, 0.1);
+      }
+      .nc-app-left {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 1rem;
+      }
+      .nc-app-icon-wrap {
+        position: relative;
+        width: 100px;
+        height: 100px;
+        border-radius: 22px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .nc-app-icon-bg {
+        position: absolute;
+        inset: 0;
+        border-radius: 22px;
+        background: linear-gradient(135deg, #1a0800, #2a1200);
+        border: 1px solid rgba(255, 106, 0, 0.3);
+      }
+      .nc-app-icon {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        z-index: 1;
+        border-radius: 22px;
+        overflow: hidden;
+      }
+      .nc-app-icon img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border-radius: 22px;
+      }
+      .nc-app-glow {
+        position: absolute;
+        inset: -4px;
+        border-radius: 26px;
+        background: transparent;
+        border: 1px solid rgba(255, 106, 0, 0.2);
+        animation: glowRing 2.5s ease infinite;
+      }
+      @keyframes glowRing {
+        0%,
+        100% {
+          box-shadow: 0 0 0 0 rgba(255, 106, 0, 0.1);
+        }
+        50% {
+          box-shadow: 0 0 0 8px rgba(255, 106, 0, 0);
+        }
+      }
+      .nc-version-badge {
+        font-family: var(--ff-title);
+        font-size: 0.75rem;
+        letter-spacing: 1px;
+        color: var(--fire2);
+        border: 1px solid rgba(255, 149, 0, 0.3);
+        padding: 0.25rem 0.75rem;
+        border-radius: 2px;
+        background: rgba(255, 149, 0, 0.06);
+        white-space: nowrap;
+      }
+      .nc-app-center {
+        flex: 1;
+      }
+      .nc-app-name {
+        font-family: var(--ff-display);
+        font-size: clamp(2rem, 5vw, 3rem);
+        font-weight: 900;
+        letter-spacing: 3px;
+        background: linear-gradient(135deg, var(--fire), var(--gold));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        line-height: 1;
+        margin-bottom: 0.4rem;
+      }
+      .nc-app-tagline {
+        font-size: 0.9rem;
+        color: var(--muted);
+        margin-bottom: 1.5rem;
+        letter-spacing: 1px;
+      }
+      .nc-features-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 0.6rem;
+        margin-bottom: 1.5rem;
+      }
+      .nc-feat {
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+        font-size: 0.82rem;
+        color: var(--muted);
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid var(--border);
+        border-radius: 4px;
+        padding: 0.45rem 0.6rem;
+        transition: all 0.2s;
+        white-space: nowrap;
+      }
+      .nc-feat:hover {
+        color: var(--white);
+        border-color: rgba(255, 106, 0, 0.3);
+        background: rgba(255, 106, 0, 0.05);
+      }
+      .nc-feat span {
+        font-size: 1rem;
+      }
+      .nc-tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+      }
+      .nc-tag {
+        font-family: var(--ff-title);
+        font-size: 0.78rem;
+        font-weight: 600;
+        letter-spacing: 1px;
+        padding: 0.3rem 0.8rem;
+        border-radius: 3px;
+        border: 1px solid;
+      }
+      .nc-tag.fire {
+        color: var(--fire);
+        border-color: rgba(255, 106, 0, 0.3);
+        background: rgba(255, 106, 0, 0.06);
+      }
+      .nc-tag.gold {
+        color: var(--gold2);
+        border-color: rgba(255, 184, 0, 0.3);
+        background: rgba(255, 184, 0, 0.06);
+      }
+      .nc-tag.cyan {
+        color: var(--cyan);
+        border-color: rgba(0, 229, 255, 0.3);
+        background: rgba(0, 229, 255, 0.06);
+      }
+      .nc-tag.green {
+        color: #00dd88;
+        border-color: rgba(0, 221, 136, 0.3);
+        background: rgba(0, 221, 136, 0.06);
+      }
+      .nc-app-right {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        gap: 0.75rem;
+        min-width: 200px;
+      }
+      .nc-dl-size,
+      .nc-dl-os,
+      .nc-dl-update {
+        font-size: 0.8rem;
+        color: var(--muted);
+        text-align: right;
+      }
+      .nc-dl-size strong,
+      .nc-dl-os strong,
+      .nc-dl-update strong {
+        color: var(--white);
+        font-weight: 600;
+      }
+      .nc-btn-download {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        background: linear-gradient(135deg, var(--fire), var(--gold2));
+        color: var(--black);
+        padding: 1rem 1.5rem;
+        border-radius: 10px;
+        border: none;
+        cursor: pointer;
+        transition: all 0.3s;
+        position: relative;
+        overflow: hidden;
+        width: 100%;
+      }
+      .nc-btn-download::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 50%;
+        height: 100%;
+        background: linear-gradient(
+          90deg,
+          transparent,
+          rgba(255, 255, 255, 0.25),
+          transparent
+        );
+        transition: left 0.5s;
+      }
+      .nc-btn-download:hover::before {
+        left: 150%;
+      }
+      .nc-btn-download:hover {
+        box-shadow: 0 8px 40px rgba(255, 106, 0, 0.5);
+        transform: translateY(-2px);
+      }
+      .nc-btn-icon {
+        font-size: 1.5rem;
+      }
+      .nc-btn-text {
+        flex: 1;
+        text-align: left;
+      }
+      .nc-btn-main {
+        display: block;
+        font-family: var(--ff-display);
+        font-size: 0.95rem;
+        font-weight: 900;
+        letter-spacing: 2px;
+      }
+      .nc-btn-sub {
+        display: block;
+        font-size: 0.7rem;
+        opacity: 0.7;
+        font-family: var(--ff-body);
+      }
+      .nc-btn-arrow {
+        font-size: 1.2rem;
+        font-weight: 700;
+        opacity: 0.7;
+      }
+      .nc-dl-note {
+        font-size: 0.72rem;
+        color: var(--muted);
+        text-align: center;
+        line-height: 1.4;
+        width: 100%;
+      }
+
+      /* MODAL */
+      #modal-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.85);
+        backdrop-filter: blur(8px);
+        z-index: 1000;
+        display: flex;
+        align-items: flex-end;
+        justify-content: center;
+        padding: 1rem;
+        opacity: 0;
+        visibility: hidden;
+        transition:
+          opacity 0.3s,
+          visibility 0.3s;
+      }
+      #modal-overlay.open {
+        opacity: 1;
+        visibility: visible;
+      }
+      #modal-overlay.open .modal-box {
+        transform: translateY(0);
+        opacity: 1;
+      }
+      .modal-box {
+        background: var(--panel);
+        border: 1px solid var(--border);
+        border-top: 2px solid var(--fire);
+        border-radius: 16px 16px 0 0;
+        width: 100%;
+        max-width: 560px;
+        max-height: 90vh;
+        overflow-y: auto;
+        transform: translateY(60px);
+        opacity: 0;
+        transition:
+          transform 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+          opacity 0.4s ease;
+      }
+      .modal-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 1.5rem 1.5rem 1rem;
+        border-bottom: 1px solid var(--border);
+        position: sticky;
+        top: 0;
+        background: var(--panel);
+        z-index: 1;
+      }
+      .modal-title {
+        font-family: var(--ff-display);
+        font-size: 1rem;
+        font-weight: 700;
+        letter-spacing: 1px;
+        background: linear-gradient(135deg, var(--fire), var(--gold));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+      .modal-subtitle {
+        font-size: 0.8rem;
+        color: var(--muted);
+        margin-top: 0.2rem;
+      }
+      .modal-close {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        background: var(--card);
+        border: 1px solid var(--border);
+        color: var(--muted);
+        font-size: 1.2rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s;
+        flex-shrink: 0;
+      }
+      .modal-close:hover {
+        color: var(--white);
+        border-color: var(--fire);
+        background: rgba(255, 106, 0, 0.1);
+      }
+      .modal-skin-info {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 1rem 1.5rem;
+        background: var(--card);
+        border-bottom: 1px solid var(--border);
+      }
+      .modal-skin-icon {
+        font-size: 2.5rem;
+      }
+      .modal-skin-name {
+        font-family: var(--ff-title);
+        font-size: 1.1rem;
+        font-weight: 700;
+      }
+      .modal-skin-type {
+        font-size: 0.8rem;
+        color: var(--muted);
+      }
+      .modal-progress-section {
+        padding: 1.25rem 1.5rem;
+        border-bottom: 1px solid var(--border);
+      }
+      .modal-progress-label {
+        display: flex;
+        justify-content: space-between;
+        font-size: 0.8rem;
+        color: var(--muted);
+        margin-bottom: 0.5rem;
+      }
+      .modal-progress-label span {
+        font-family: var(--ff-display);
+        color: var(--gold2);
+      }
+      .modal-progress-track {
+        height: 8px;
+        background: var(--border);
+        border-radius: 4px;
+        overflow: hidden;
+      }
+      .modal-progress-fill {
+        height: 100%;
+        border-radius: 4px;
+        background: linear-gradient(90deg, var(--fire), var(--gold));
+        box-shadow: 0 0 10px var(--fire);
+        transition: width 0.4s ease;
+      }
+      .task-list {
+        padding: 1rem 1.5rem;
+      }
+      .task-item {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 1rem;
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        margin-bottom: 0.75rem;
+        transition: border-color 0.3s;
+      }
+      .task-item.done {
+        border-color: rgba(0, 204, 102, 0.4);
+        background: rgba(0, 204, 102, 0.04);
+      }
+      .task-checkbox {
+        width: 26px;
+        height: 26px;
+        min-width: 26px;
+        border-radius: 50%;
+        border: 2px solid var(--border);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.3s;
+        position: relative;
+      }
+      .task-checkbox.checked {
+        background: #00cc66;
+        border-color: #00cc66;
+      }
+      .task-checkbox.checked::after {
+        content: "✓";
+        color: white;
+        font-size: 0.85rem;
+        font-weight: bold;
+      }
+      .task-icon {
+        font-size: 1.5rem;
+      }
+      .task-text {
+        flex: 1;
+      }
+      .task-name {
+        font-family: var(--ff-title);
+        font-size: 0.95rem;
+        font-weight: 600;
+        margin-bottom: 0.1rem;
+      }
+      .task-desc {
+        font-size: 0.75rem;
+        color: var(--muted);
+      }
+      .task-action {
+        font-family: var(--ff-title);
+        font-size: 0.75rem;
+        font-weight: 700;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        color: var(--fire);
+        border: 1px solid rgba(255, 106, 0, 0.4);
+        background: rgba(255, 106, 0, 0.06);
+        padding: 0.4rem 0.9rem;
+        border-radius: 3px;
+        white-space: nowrap;
+        transition: all 0.2s;
+      }
+      .task-action:hover {
+        background: rgba(255, 106, 0, 0.15);
+        border-color: var(--fire);
+      }
+      .task-action.done-btn {
+        color: #00cc66;
+        border-color: rgba(0, 204, 102, 0.4);
+        background: rgba(0, 204, 102, 0.06);
+      }
+      .modal-footer {
+        padding: 1.25rem 1.5rem 2rem;
+      }
+      .btn-unlock {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.7rem;
+        width: 100%;
+        font-family: var(--ff-display);
+        font-size: 1rem;
+        font-weight: 700;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        color: var(--black);
+        background: linear-gradient(135deg, var(--fire), var(--gold));
+        padding: 1.1rem;
+        border-radius: 8px;
+        transition: all 0.3s;
+      }
+      .btn-unlock:disabled {
+        background: var(--border);
+        color: var(--muted);
+        cursor: not-allowed;
+        box-shadow: none;
+      }
+      .btn-unlock:not(:disabled):hover {
+        box-shadow: 0 8px 40px rgba(255, 106, 0, 0.6);
+        transform: translateY(-2px);
+      }
+      .btn-unlock.glow-active {
+        animation: glowPulse 1.5s ease infinite;
+      }
+      @keyframes glowPulse {
+        0%,
+        100% {
+          box-shadow: 0 0 20px rgba(255, 106, 0, 0.6);
+        }
+        50% {
+          box-shadow:
+            0 0 50px rgba(255, 180, 0, 0.9),
+            0 0 80px rgba(255, 106, 0, 0.5);
+        }
+      }
+
+      /* CONFETTI */
+      .confetti-container {
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        z-index: 9998;
+        overflow: hidden;
+      }
+      .confetti-piece {
+        position: absolute;
+        width: 8px;
+        height: 14px;
+        border-radius: 2px;
+        animation: confettiFall linear forwards;
+        opacity: 0;
+      }
+      @keyframes confettiFall {
+        0% {
+          opacity: 1;
+          transform: translateY(-10px) rotate(0deg);
+        }
+        100% {
+          opacity: 0;
+          transform: translateY(100vh) rotate(720deg);
+        }
+      }
+
+      /* YOUTUBE */
+      #videos {
+        padding: 6rem 0;
+        background: var(--deep);
+        border-top: 1px solid var(--border);
+      }
+      .videos-header {
+        text-align: center;
+        margin-bottom: 3rem;
+      }
+      .video-embed-wrap {
+        max-width: 860px;
+        margin: 0 auto;
+        border-radius: 12px;
+        overflow: hidden;
+        border: 1px solid var(--border);
+        box-shadow: 0 20px 80px rgba(0, 0, 0, 0.5);
+        position: relative;
+      }
+      .video-embed-wrap::before {
+        content: "";
+        position: absolute;
+        inset: -2px;
+        background: linear-gradient(
+          135deg,
+          rgba(255, 106, 0, 0.3),
+          transparent,
+          rgba(255, 208, 96, 0.2)
+        );
+        border-radius: 12px;
+        z-index: -1;
+      }
+      .video-embed-wrap iframe {
+        display: block;
+        width: 100%;
+        aspect-ratio: 16/9;
+        border: none;
+      }
+
+      /* FOOTER */
+      footer {
+        background: var(--deep);
+        border-top: 1px solid var(--border);
+        padding: 3rem 0 2rem;
+      }
+      .footer-inner {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 2rem;
+        text-align: center;
+      }
+      .footer-logo {
+        font-family: var(--ff-display);
+        font-size: 1.8rem;
+        font-weight: 900;
+        letter-spacing: 4px;
+        background: linear-gradient(135deg, var(--fire), var(--gold));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+      .footer-desc {
+        font-size: 0.9rem;
+        color: var(--muted);
+        max-width: 400px;
+        line-height: 1.6;
+      }
+      .social-links {
+        display: flex;
+        gap: 1rem;
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+      .social-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.6rem;
+        font-family: var(--ff-title);
+        font-size: 0.85rem;
+        font-weight: 600;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        padding: 0.65rem 1.4rem;
+        border-radius: 3px;
+        border: 1px solid var(--border);
+        background: var(--card);
+        color: var(--muted);
+        transition: all 0.3s;
+      }
+      .social-link:hover {
+        border-color: var(--fire);
+        color: var(--fire);
+        background: rgba(255, 106, 0, 0.06);
+      }
+      .social-link.yt:hover {
+        border-color: #ff0000;
+        color: #ff0000;
+        background: rgba(255, 0, 0, 0.06);
+      }
+      .social-link.zalo:hover {
+        border-color: #0068ff;
+        color: #0068ff;
+        background: rgba(0, 104, 255, 0.06);
+      }
+      .social-link.tg:hover {
+        border-color: #26a5e4;
+        color: #26a5e4;
+        background: rgba(38, 165, 228, 0.06);
+      }
+      .footer-copy {
+        font-size: 0.75rem;
+        color: var(--muted);
+        border-top: 1px solid var(--border);
+        padding-top: 1.5rem;
+        width: 100%;
+        text-align: center;
+      }
+
+      /* FAKE LOADING */
+      #dl-loading-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(5, 5, 14, 0.97);
+        backdrop-filter: blur(16px);
+        z-index: 2000;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        opacity: 0;
+        visibility: hidden;
+        transition:
+          opacity 0.4s,
+          visibility 0.4s;
+      }
+      #dl-loading-overlay.open {
+        opacity: 1;
+        visibility: visible;
+      }
+      .dl-app-icon {
+        font-size: 5rem;
+        margin-bottom: 1.5rem;
+        filter: drop-shadow(0 0 30px #ff6a00aa);
+        animation: iconFloat 3s ease-in-out infinite;
+      }
+      @keyframes iconFloat {
+        0%,
+        100% {
+          transform: translateY(0) scale(1);
+        }
+        50% {
+          transform: translateY(-10px) scale(1.05);
+        }
+      }
+      .dl-app-name {
+        font-family: var(--ff-display);
+        font-size: clamp(1.8rem, 6vw, 3rem);
+        font-weight: 900;
+        letter-spacing: 4px;
+        background: linear-gradient(
+          135deg,
+          var(--fire),
+          var(--gold),
+          var(--fire2)
+        );
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        margin-bottom: 0.4rem;
+      }
+      .dl-app-sub {
+        font-family: var(--ff-title);
+        font-size: 0.85rem;
+        letter-spacing: 4px;
+        text-transform: uppercase;
+        color: var(--muted);
+        margin-bottom: 3rem;
+      }
+      .dl-scanner {
+        position: relative;
+        width: 160px;
+        height: 160px;
+        margin-bottom: 2.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .dl-ring {
+        position: absolute;
+        inset: 0;
+        border-radius: 50%;
+        border: 2px solid transparent;
+      }
+      .dl-ring-1 {
+        border-top-color: var(--fire);
+        border-right-color: rgba(255, 106, 0, 0.3);
+        animation: spinRing 1.4s linear infinite;
+      }
+      .dl-ring-2 {
+        inset: 12px;
+        border-top-color: var(--gold2);
+        border-left-color: rgba(255, 184, 0, 0.3);
+        animation: spinRing 2s linear infinite reverse;
+      }
+      .dl-ring-3 {
+        inset: 24px;
+        border-top-color: var(--fire2);
+        animation: spinRing 0.9s linear infinite;
+      }
+      @keyframes spinRing {
+        from {
+          transform: rotate(0deg);
+        }
+        to {
+          transform: rotate(360deg);
+        }
+      }
+      .dl-ring-center {
+        width: 72px;
+        height: 72px;
+        border-radius: 50%;
+        background: radial-gradient(
+          circle,
+          rgba(255, 106, 0, 0.15),
+          rgba(255, 106, 0, 0.04)
+        );
+        border: 1px solid rgba(255, 106, 0, 0.3);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2rem;
+      }
+      .dl-step-box {
+        text-align: center;
+        margin-bottom: 2rem;
+        min-height: 52px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.3rem;
+      }
+      .dl-step-text {
+        font-family: var(--ff-title);
+        font-size: 1.05rem;
+        font-weight: 600;
+        letter-spacing: 1px;
+        color: var(--white);
+      }
+      .dl-step-sub {
+        font-size: 0.78rem;
+        color: var(--muted);
+        letter-spacing: 1px;
+      }
+      .dl-progress-wrap {
+        width: min(420px, 80vw);
+        margin-bottom: 1rem;
+      }
+      .dl-progress-track {
+        height: 10px;
+        background: var(--border);
+        border-radius: 5px;
+        overflow: hidden;
+        position: relative;
+      }
+      .dl-progress-track::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: repeating-linear-gradient(
+          90deg,
+          transparent 0px,
+          transparent 20px,
+          rgba(255, 255, 255, 0.03) 20px,
+          rgba(255, 255, 255, 0.03) 40px
+        );
+      }
+      .dl-progress-fill {
+        height: 100%;
+        width: 0%;
+        border-radius: 5px;
+        background: linear-gradient(
+          90deg,
+          var(--fire),
+          var(--gold2),
+          var(--fire)
+        );
+        background-size: 200% 100%;
+        box-shadow:
+          0 0 12px var(--fire),
+          0 0 30px rgba(255, 106, 0, 0.3);
+        transition: width 0.3s ease;
+        animation: progressShimmer 2s linear infinite;
+      }
+      @keyframes progressShimmer {
+        0% {
+          background-position: 200% 0;
+        }
+        100% {
+          background-position: -200% 0;
+        }
+      }
+      .dl-progress-label {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 0.5rem;
+      }
+      .dl-progress-label span {
+        font-family: var(--ff-title);
+        font-size: 0.78rem;
+        color: var(--muted);
+        letter-spacing: 1px;
+      }
+      .dl-progress-label strong {
+        font-family: var(--ff-display);
+        font-size: 0.85rem;
+        color: var(--gold2);
+      }
+      .dl-log {
+        width: min(420px, 80vw);
+        background: rgba(0, 0, 0, 0.5);
+        border: 1px solid var(--border);
+        border-radius: 6px;
+        padding: 0.75rem 1rem;
+        margin-bottom: 2rem;
+        min-height: 64px;
+        font-family: "Courier New", monospace;
+        font-size: 0.72rem;
+        color: #00cc88;
+        overflow: hidden;
+      }
+      .dl-log-line {
+        opacity: 0;
+        transform: translateY(6px);
+        animation: logAppear 0.3s ease forwards;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      @keyframes logAppear {
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+      .dl-log-line.ok::before {
+        content: "[OK] ";
+        color: #00cc88;
+      }
+      .dl-log-line.info::before {
+        content: "[..] ";
+        color: var(--gold2);
+      }
+      .dl-log-line.warn::before {
+        content: "[!!] ";
+        color: var(--fire);
+      }
+
+      /* RESPONSIVE */
+      @media (max-width: 900px) {
+        .stats-grid {
+          grid-template-columns: repeat(2, 1fr);
+        }
+        .donate-inner {
+          grid-template-columns: 1fr;
+        }
+        .nc-app-card {
+          grid-template-columns: 1fr;
+          gap: 1.5rem;
+        }
+        .nc-app-left {
+          flex-direction: row;
+          align-items: center;
+        }
+        .nc-app-right {
+          align-items: flex-start;
+        }
+        .nc-features-grid {
+          grid-template-columns: repeat(2, 1fr);
+        }
+      }
+      @media (max-width: 700px) {
+        .nav-links {
+          display: none;
+        }
+        .hero-stats {
+          gap: 1.5rem;
+        }
+        .nc-features-grid {
+          grid-template-columns: repeat(2, 1fr);
+        }
+      }
+      @media (max-width: 500px) {
+        .stats-grid {
+          grid-template-columns: 1fr 1fr;
+        }
+        .modal-box {
+          max-height: 95vh;
+        }
+        .task-item {
+          flex-wrap: wrap;
+        }
+        .nc-features-grid {
+          grid-template-columns: 1fr 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div id="loader">
+      <div class="loader-logo">NICUE VN</div>
+      <div class="loader-sub">NC TOOLS · Free Fire</div>
+      <div class="loader-bar-wrap"><div class="loader-bar"></div></div>
+    </div>
+
+    <div class="cursor-glow" id="cursorGlow"></div>
+    <canvas id="particles-canvas"></canvas>
+    <div class="confetti-container" id="confettiContainer"></div>
+
+    <nav>
+      <div class="nav-inner">
+        <div class="nav-logo">NICUE VN</div>
+        <ul class="nav-links">
+          <li><a href="#donate">Ủng Hộ</a></li>
+          <li><a href="#trust">Uy Tín</a></li>
+          <li><a href="#skins">NC TOOLS</a></li>
+          <li><a href="#videos">Video</a></li>
+        </ul>
+        <a
+          href="https://www.youtube.com/@NiCueeVN"
+          target="_blank"
+          class="nav-cta"
+          >▶ Subscribe</a
+        >
+      </div>
+    </nav>
+
+    <section id="hero">
+      <div class="hero-bg"></div>
+      <div class="hero-grid"></div>
+      <div class="hero-content">
+        <div class="hero-badge">
+          <span class="hero-badge-dot"></span>🔥 Cập nhật liên tục · Miễn phí
+          100% · Không Virus
+        </div>
+        <h1 class="hero-title">
+          <span class="line1">NC TOOLS</span>
+          <span class="line2">FREE FIRE</span>
+        </h1>
+        <p class="hero-tagline">
+          Công cụ hỗ trợ Free Fire <strong>mạnh nhất Việt Nam</strong> từ kênh
+          <strong>NICUE VN</strong>. Tính năng độc quyền, an toàn tuyệt đối, cập
+          nhật liên tục mỗi ngày.
+        </p>
+        <div class="hero-ctas">
+          <a href="#skins" class="btn-primary">⬇ Tải NC TOOLS Ngay</a>
+          <a
+            href="https://www.youtube.com/@NiCueeVN"
+            target="_blank"
+            class="btn-secondary"
+            >📺 Kênh YouTube</a
+          >
+        </div>
+        <div class="hero-stats">
+          <div class="hero-stat-item">
+            <div class="hero-stat-num">10K+</div>
+            <div class="hero-stat-label">Subscribers</div>
+          </div>
+          <div class="hero-stat-item">
+            <div class="hero-stat-num">50K+</div>
+            <div class="hero-stat-label">Lượt Tải</div>
+          </div>
+          <div class="hero-stat-item">
+            <div class="hero-stat-num">99%</div>
+            <div class="hero-stat-label">Hài Lòng</div>
+          </div>
+          <div class="hero-stat-item">
+            <div class="hero-stat-num">0</div>
+            <div class="hero-stat-label">Virus Phát Hiện</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="donate">
+      <div class="container">
+        <div class="donate-inner">
+          <div class="donate-left reveal">
+            <div class="section-label">💰 Ủng Hộ Kênh</div>
+            <h2 class="donate-title">
+              Ủng Hộ <span class="gradient-text">NICUE VN</span><br />Để Phát
+              Triển NC TOOLS
+            </h2>
+            <p class="donate-desc">
+              Mỗi đồng ủng hộ giúp NICUE VN duy trì server, phát triển thêm
+              <strong>tính năng mới cho NC TOOLS</strong> và cập nhật nhanh hơn
+              sau mỗi bản Free Fire. Cảm ơn bạn đã đồng hành! 🔥
+            </p>
+            <div class="bank-info">
+              <div class="bank-row">
+                <span class="bank-label">MOMO</span
+                ><span class="bank-value">MoMo</span>
+              </div>
+              <div class="bank-row">
+                <span class="bank-label">Số tài khoản</span
+                ><span class="bank-value" id="bankNum">0349667922</span>
+              </div>
+              <div class="bank-row">
+                <span class="bank-label">Chủ tài khoản</span
+                ><span class="bank-value">NICUE VN</span>
+              </div>
+              <div class="bank-row">
+                <span class="bank-label">Nội dung CK</span
+                ><span class="bank-value">UNG HO NICUE VN</span>
+              </div>
+            </div>
+            <button class="btn-copy" id="copyBtn" onclick="copyBank()">
+              📋 Copy Số Tài Khoản
+            </button>
+          </div>
+          <div class="donate-right reveal">
+            <div class="qr-badge">⭐ Ủng Hộ NICUE VN</div>
+            <div class="qr-frame" id="qrFrame">
+              <div class="qr-placeholder">
+                <img
+                  src="z7593933745030_912b671740908f147b44cca686fcf8e1.jpg"
+                  alt="QR MoMo NICUE VN"
+                />
+              </div>
+              <div class="qr-sparkles" id="qrSparkles"></div>
+            </div>
+            <p
+              style="
+                font-size: 0.85rem;
+                color: var(--muted);
+                text-align: center;
+                max-width: 260px;
+                line-height: 1.6;
+              "
+            >
+              Quét QR để chuyển khoản hoặc copy số tài khoản bên trái 💸
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="trust">
+      <div class="container">
+        <div class="trust-header reveal">
+          <div class="section-label">🏆 Độ Uy Tín</div>
+          <h2 class="section-title gradient-text">NICUE VN — Uy Tín #1 VN</h2>
+          <p
+            style="color: var(--muted); margin-top: 0.75rem; font-size: 0.95rem"
+          >
+            Số liệu thực tế từ cộng đồng người dùng NC TOOLS
+          </p>
+        </div>
+        <div class="stats-grid reveal">
+          <div class="stat-card">
+            <span class="stat-icon">📺</span>
+            <div class="stat-number" data-target="5000+" data-suffix="+">0</div>
+            <div class="stat-label">Subscribers</div>
+          </div>
+          <div class="stat-card">
+            <span class="stat-icon">⬇</span>
+            <div class="stat-number" data-target="5000" data-suffix="+">0</div>
+            <div class="stat-label">Lượt Tải App</div>
+          </div>
+          <div class="stat-card">
+            <span class="stat-icon">⚙️</span>
+            <div class="stat-number" data-target="20" data-suffix="+">0</div>
+            <div class="stat-label">Tính Năng</div>
+          </div>
+          <div class="stat-card">
+            <span class="stat-icon">✅</span>
+            <div class="stat-number" data-target="99" data-suffix="%">0</div>
+            <div class="stat-label">Tỉ Lệ Hài Lòng</div>
+          </div>
+        </div>
+        <div class="rating-section reveal">
+          <div class="rating-item">
+            <div class="stars">
+              <span class="star">★</span><span class="star">★</span
+              ><span class="star">★</span><span class="star">★</span
+              ><span class="star">★</span>
+            </div>
+            <div class="rating-score">5.0/5.0</div>
+            <div class="rating-label">Chất Lượng App</div>
+          </div>
+          <div class="rating-item">
+            <div class="stars">
+              <span class="star">★</span><span class="star">★</span
+              ><span class="star">★</span><span class="star">★</span
+              ><span class="star">★</span>
+            </div>
+            <div class="rating-score">5.0/5.0</div>
+            <div class="rating-label">Tốc Độ Cập Nhật</div>
+          </div>
+          <div class="rating-item">
+            <div class="stars">
+              <span class="star">★</span><span class="star">★</span
+              ><span class="star">★</span><span class="star">★</span
+              ><span class="star">★</span>
+            </div>
+            <div class="rating-score">5.0/5.0</div>
+            <div class="rating-label">An Toàn &amp; Uy Tín</div>
+          </div>
+        </div>
+        <div class="progress-row reveal">
+          <div class="progress-item">
+            <div class="progress-header">
+              <span class="progress-label">App hoạt động ổn định</span
+              ><span class="progress-value">98%</span>
+            </div>
+            <div class="progress-track">
+              <div class="progress-fill" data-width="0.98"></div>
+            </div>
+          </div>
+          <div class="progress-item">
+            <div class="progress-header">
+              <span class="progress-label">Không phát hiện virus / malware</span
+              ><span class="progress-value">100%</span>
+            </div>
+            <div class="progress-track">
+              <div class="progress-fill" data-width="1"></div>
+            </div>
+          </div>
+          <div class="progress-item">
+            <div class="progress-header">
+              <span class="progress-label"
+                >Tương thích với bản Free Fire mới</span
+              ><span class="progress-value">95%</span>
+            </div>
+            <div class="progress-track">
+              <div class="progress-fill" data-width="0.95"></div>
+            </div>
+          </div>
+        </div>
+        <div class="badges-row reveal" style="margin-top: 3rem">
+          <span class="trust-badge fire">🔥 Kênh Uy Tín</span>
+          <span class="trust-badge gold">⚡ Cập Nhật Hàng Ngày</span>
+          <span class="trust-badge cyan">🛡️ Không Virus</span>
+          <span class="trust-badge green">✅ Miễn Phí 100%</span>
+          <span class="trust-badge fire">🎮 1000+ Members</span>
+          <span class="trust-badge gold">📺 YouTube Verified</span>
+        </div>
+      </div>
+    </section>
+
+    <section id="skins">
+      <div class="container">
+        <div class="skins-header reveal">
+          <div class="section-label">⚙️ NC TOOLS</div>
+          <h2 class="section-title">
+            Tải <span class="gradient-text">NC TOOLS</span> Miễn Phí
+          </h2>
+          <p
+            style="color: var(--muted); margin-top: 0.75rem; font-size: 0.95rem"
+          >
+            Công cụ hỗ trợ Free Fire toàn diện — tất cả tính năng trong 1 app
+            duy nhất
+          </p>
+        </div>
+        <div class="nc-app-card reveal">
+          <div class="nc-app-left">
+            <div class="nc-app-icon-wrap">
+              <div class="nc-app-icon-bg"></div>
+              <div class="nc-app-icon">
+                <img src="channels4_profile.jpg" alt="NC TOOLS" />
+              </div>
+              <div class="nc-app-glow"></div>
+            </div>
+            <div class="nc-version-badge">v1.6.0 · Mới nhất</div>
+          </div>
+          <div class="nc-app-center">
+            <div class="nc-app-name">NC TOOLS</div>
+            <div class="nc-app-tagline">
+              by <span style="color: var(--fire)">NICUE VN</span> · Free Fire
+              Support App
+            </div>
+            <div class="nc-features-grid">
+              <div class="nc-feat"><span>🎮</span> MOD Skin nhân vật</div>
+              <div class="nc-feat"><span>🔫</span> MOD Skin súng</div>
+              <div class="nc-feat"><span>⚡</span> Tăng FPS mượt</div>
+              <div class="nc-feat"><span>🛡️</span> Anti-ban tích hợp</div>
+              <div class="nc-feat"><span>🔄</span> Tự cập nhật</div>
+              <div class="nc-feat"><span>📱</span> Hỗ trợ mọi máy</div>
+            </div>
+            <div class="nc-tags">
+              <span class="nc-tag fire">✅ Miễn Phí</span>
+              <span class="nc-tag gold">🔒 Không Virus</span>
+              <span class="nc-tag cyan">📦 APK An Toàn</span>
+              <span class="nc-tag green">⚡ Nhẹ &amp; Nhanh</span>
+            </div>
+          </div>
+          <div class="nc-app-right">
+            <div class="nc-dl-size">Dung lượng: <strong>~24 MB</strong></div>
+            <div class="nc-dl-os">Yêu cầu: <strong>Android 5.0+</strong></div>
+            <div class="nc-dl-update">Cập nhật: <strong>Hôm nay</strong></div>
+            <button class="nc-btn-download" onclick="startDownloadFlow()">
+              <span class="nc-btn-icon">⬇</span>
+              <span class="nc-btn-text">
+                <span class="nc-btn-main">TẢI NC TOOLS</span>
+                <span class="nc-btn-sub">Miễn phí · APK</span>
+              </span>
+              <span class="nc-btn-arrow">→</span>
+            </button>
+            <div class="nc-dl-note">📌 Hoàn thành nhiệm vụ để mở khóa tải</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="videos">
+      <div class="container">
+        <div class="videos-header reveal">
+          <div class="section-label">📺 Video Mới Nhất</div>
+          <h2 class="section-title">
+            Video Từ <span class="gradient-text">NICUE VN</span>
+          </h2>
+          <p
+            style="color: var(--muted); margin-top: 0.75rem; font-size: 0.95rem"
+          >
+            Đừng quên like, subscribe và bật chuông thông báo nhé! 🔔
+          </p>
+        </div>
+        <div class="video-embed-wrap reveal">
+          <iframe
+            src="https://www.youtube.com/embed/kQFmEegVfy21V5h2"
+            title="NICUE VN - NC TOOLS Free Fire"
+            allow="
+              accelerometer;
+              autoplay;
+              clipboard-write;
+              encrypted-media;
+              gyroscope;
+              picture-in-picture;
+            "
+            allowfullscreen
+          ></iframe>
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      <div class="container">
+        <div class="footer-inner">
+          <div class="footer-logo">NICUE VN</div>
+          <p class="footer-desc">
+            Kênh YouTube chuyên NC TOOLS Free Fire uy tín, cập nhật liên tục,
+            hoàn toàn miễn phí. Cùng nhau xây dựng cộng đồng FF Việt Nam mạnh
+            mẽ! 🔥
+          </p>
+          <div class="social-links">
+            <a
+              href="https://www.youtube.com/@NiCueeVN"
+              target="_blank"
+              class="social-link yt"
+              >▶ YouTube</a
+            >
+            <a
+              href="https://zalo.me/g/srbsdy811"
+              target="_blank"
+              class="social-link zalo"
+              >💬 Nhóm Zalo</a
+            >
+            <a
+              href="https://t.me/NicueVN"
+              target="_blank"
+              class="social-link tg"
+              >✈️ Telegram</a
+            >
+          </div>
+          <p class="footer-copy">
+            © 2025 NICUE VN – NC TOOLS Free Fire. Designed with 🔥 for the FF
+            Community Vietnam.
+          </p>
+        </div>
+      </div>
+    </footer>
+
+    <!-- FAKE LOADING OVERLAY -->
+    <div id="dl-loading-overlay">
+      <div class="dl-app-icon">🛠️</div>
+      <div class="dl-app-name">NC TOOLS</div>
+      <div class="dl-app-sub">by NICUE VN · Đang chuẩn bị...</div>
+      <div class="dl-scanner">
+        <div class="dl-ring dl-ring-1"></div>
+        <div class="dl-ring dl-ring-2"></div>
+        <div class="dl-ring dl-ring-3"></div>
+        <div class="dl-ring-center">⚙️</div>
+      </div>
+      <div class="dl-step-box">
+        <div class="dl-step-text" id="dlStepText">Đang khởi tạo...</div>
+        <div class="dl-step-sub" id="dlStepSub">
+          Vui lòng chờ trong giây lát
+        </div>
+      </div>
+      <div class="dl-progress-wrap">
+        <div class="dl-progress-track">
+          <div class="dl-progress-fill" id="dlProgressFill"></div>
+        </div>
+        <div class="dl-progress-label">
+          <span id="dlProgressStatus">Đang xử lý...</span
+          ><strong id="dlProgressPct">0%</strong>
+        </div>
+      </div>
+      <div class="dl-log" id="dlLog"></div>
+    </div>
+
+    <!-- TASK MODAL -->
+    <div id="modal-overlay" role="dialog" aria-modal="true">
+      <div class="modal-box">
+        <div class="modal-header">
+          <div>
+            <div class="modal-title">🔐 Mở Khóa Tải NC TOOLS</div>
+            <div class="modal-subtitle">
+              Hoàn thành nhiệm vụ để nhận app miễn phí!
+            </div>
+          </div>
+          <button class="modal-close" onclick="closeModal()" aria-label="Đóng">
+            ✕
+          </button>
+        </div>
+        <div class="modal-skin-info">
+          <div class="modal-skin-icon">🛠️</div>
+          <div>
+            <div class="modal-skin-name">NC TOOLS</div>
+            <div class="modal-skin-type">
+              Công cụ hỗ trợ Free Fire · by NICUE VN
+            </div>
+          </div>
+        </div>
+        <div class="modal-progress-section">
+          <div class="modal-progress-label">
+            <span>Tiến độ nhiệm vụ</span>
+            <span id="progressText">0/5</span>
+          </div>
+          <div class="modal-progress-track">
+            <div
+              class="modal-progress-fill"
+              id="modalProgressFill"
+              style="width: 0%"
+            ></div>
+          </div>
+        </div>
+        <div class="task-list" id="taskList"></div>
+        <div class="modal-footer">
+          <button
+            class="btn-unlock"
+            id="unlockBtn"
+            disabled
+            onclick="handleDownload()"
+          >
+            🔒 Hoàn Thành Nhiệm Vụ Để Mở Khóa
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // ==============================
+      // CẤU HÌNH — chỉnh tại đây
+      // ==============================
+      const APP_DOWNLOAD_URL = "https://link4m.com/3pJHE";
+
+      const tasks = [
+        {
+          id: "like",
+          icon: "👍",
+          name: "Like video NICUE VN",
+          desc: "Thả tim cho video mới nhất nhé!",
+          btnText: "Đi tới video",
+          link: "https://youtu.be/mI9ATSFugwM?si=G1t7V1kFU4JaFTQe",
+        },
+        {
+          id: "sub",
+          icon: "🔔",
+          name: "Đăng ký kênh NICUE VN",
+          desc: "Subscribe + bật chuông để không bỏ lỡ",
+          btnText: "Đăng ký ngay",
+          link: "https://www.youtube.com/@NiCueeVN",
+        },
+        {
+          id: "comment",
+          icon: "💬",
+          name: "Bình luận video",
+          desc: "Để lại comment cổ vũ kênh nha bạn!",
+          btnText: "Bình luận ngay",
+          link: "https://youtu.be/mI9ATSFugwM?si=G1t7V1kFU4JaFTQe",
+        },
+        {
+          id: "zalo",
+          icon: "📱",
+          name: "Tham gia nhóm Zalo",
+          desc: "Nhận thông báo NC TOOLS mới nhanh nhất",
+          btnText: "Vào nhóm",
+          link: "https://zalo.me/g/srbsdy811",
+        },
+        {
+          id: "telegram",
+          icon: "✈️",
+          name: "Tham gia Telegram",
+          desc: "Cộng đồng NC TOOLS sôi động",
+          btnText: "Vào nhóm",
+          link: "https://t.me/NicueVN",
+        },
+      ];
+
+      // ==============================
+      // STATE — KHÔNG lưu localStorage
+      // Mỗi lần load trang hoặc bấm tải đều reset về 0
+      // ==============================
+      let taskState = {};
+
+      // ==============================
+      // PAGE LOADER
+      // ==============================
+      window.addEventListener("load", () => {
+        setTimeout(() => {
+          document.getElementById("loader").classList.add("hidden");
+          initParticles();
+        }, 2200);
+      });
+
+      // ==============================
+      // CURSOR GLOW
+      // ==============================
+      const cursorGlow = document.getElementById("cursorGlow");
+      document.addEventListener("mousemove", (e) => {
+        cursorGlow.style.left = e.clientX + "px";
+        cursorGlow.style.top = e.clientY + "px";
+      });
+
+      // ==============================
+      // PARTICLES
+      // ==============================
+      function initParticles() {
+        const canvas = document.getElementById("particles-canvas");
+        const ctx = canvas.getContext("2d");
+        let W = window.innerWidth,
+          H = window.innerHeight;
+        canvas.width = W;
+        canvas.height = H;
+        window.addEventListener("resize", () => {
+          W = canvas.width = window.innerWidth;
+          H = canvas.height = window.innerHeight;
+        });
+        const colors = ["#ff6a00", "#ff9500", "#ffb800", "#ffd060", "#ff2244"];
+        const particles = [];
+        class P {
+          constructor() {
+            this.reset();
+          }
+          reset() {
+            this.x = Math.random() * W;
+            this.y = H + 20;
+            this.vy = -(Math.random() * 1.5 + 0.5);
+            this.vx = (Math.random() - 0.5) * 0.6;
+            this.size = Math.random() * 3 + 1;
+            this.life = 1;
+            this.decay = Math.random() * 0.008 + 0.003;
+            this.color = colors[Math.floor(Math.random() * colors.length)];
+          }
+          update() {
+            this.x += this.vx;
+            this.y += this.vy;
+            this.life -= this.decay;
+            if (this.life <= 0) this.reset();
+          }
+          draw() {
+            ctx.save();
+            ctx.globalAlpha = this.life * 0.6;
+            ctx.fillStyle = this.color;
+            ctx.shadowColor = this.color;
+            ctx.shadowBlur = 8;
+            ctx.beginPath();
+            ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.restore();
+          }
+        }
+        for (let i = 0; i < 80; i++) {
+          const p = new P();
+          p.y = Math.random() * H;
+          p.life = Math.random();
+          particles.push(p);
+        }
+        (function loop() {
+          ctx.clearRect(0, 0, W, H);
+          particles.forEach((p) => {
+            p.update();
+            p.draw();
+          });
+          requestAnimationFrame(loop);
+        })();
+      }
+
+      // ==============================
+      // SCROLL REVEAL
+      // ==============================
+      const revObs = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((e, i) => {
+            if (e.isIntersecting) {
+              setTimeout(() => e.target.classList.add("visible"), i * 80);
+              revObs.unobserve(e.target);
+            }
+          });
+        },
+        { threshold: 0.1 },
+      );
+      document.querySelectorAll(".reveal").forEach((el) => revObs.observe(el));
+
+      // ==============================
+      // ANIMATED COUNTERS
+      // ==============================
+      function animateCounter(el) {
+        const target = parseInt(el.dataset.target),
+          suffix = el.dataset.suffix || "";
+        const step = target / (2000 / 16);
+        let cur = 0;
+        const t = setInterval(() => {
+          cur += step;
+          if (cur >= target) {
+            cur = target;
+            clearInterval(t);
+          }
+          el.textContent = Math.floor(cur).toLocaleString("vi-VN") + suffix;
+        }, 16);
+      }
+      new IntersectionObserver(
+        (entries) => {
+          entries.forEach((e) => {
+            if (e.isIntersecting) {
+              e.target
+                .querySelectorAll(".stat-number[data-target]")
+                .forEach(animateCounter);
+              e.target
+                .querySelectorAll(".progress-fill")
+                .forEach((f) => f.classList.add("animate"));
+              e.target
+                .querySelectorAll(".star")
+                .forEach((s, i) =>
+                  setTimeout(() => s.classList.add("active"), i * 150),
+                );
+            }
+          });
+        },
+        { threshold: 0.3 },
+      ).observe(document.getElementById("trust"));
+
+      // ==============================
+      // QR SPARKLES
+      // ==============================
+      document.getElementById("qrFrame").addEventListener("mouseenter", () => {
+        for (let i = 0; i < 12; i++)
+          setTimeout(() => {
+            const s = document.createElement("div");
+            s.className = "sparkle";
+            s.style.left = 10 + Math.random() * 80 + "%";
+            s.style.bottom = "0";
+            s.style.animationDuration = 1.5 + Math.random() * 2 + "s";
+            s.style.animationDelay = Math.random() * 2 + "s";
+            document.getElementById("qrSparkles").appendChild(s);
+            setTimeout(() => s.remove(), 4000);
+          }, i * 100);
+      });
+
+      // ==============================
+      // COPY BANK
+      // ==============================
+      function copyBank() {
+        navigator.clipboard
+          .writeText(
+            document.getElementById("bankNum").textContent.replace(/\s/g, ""),
+          )
+          .then(() => {
+            const btn = document.getElementById("copyBtn");
+            btn.classList.add("copied");
+            btn.textContent = "✅ Đã Copy!";
+            setTimeout(() => {
+              btn.classList.remove("copied");
+              btn.innerHTML = "📋 Copy Số Tài Khoản";
+            }, 2000);
+          });
+      }
+
+      // ==============================
+      // FAKE LOADING — 8 giây
+      // ==============================
+      const DL_STEPS = [
+        {
+          at: 0,
+          pct: 0,
+          text: "Đang kết nối máy chủ...",
+          sub: "Thiết lập kết nối bảo mật",
+          log: { type: "info", msg: "Connecting to NC-TOOLS server..." },
+        },
+        {
+          at: 800,
+          pct: 12,
+          text: "Kết nối thành công!",
+          sub: "Server Việt Nam · Ping 12ms",
+          log: { type: "ok", msg: "Server connected. Region: VN-HCM" },
+        },
+        {
+          at: 1500,
+          pct: 22,
+          text: "Xác minh phiên bản...",
+          sub: "Kiểm tra NC TOOLS v1.5",
+          log: { type: "info", msg: "Fetching version manifest..." },
+        },
+        {
+          at: 2300,
+          pct: 35,
+          text: "Phiên bản hợp lệ ✓",
+          sub: "NC TOOLS v1.5 · Mới nhất",
+          log: { type: "ok", msg: "Version 1.2 verified. No updates needed." },
+        },
+        {
+          at: 3000,
+          pct: 48,
+          text: "Đang quét bảo mật...",
+          sub: "Kiểm tra chữ ký số APK",
+          log: { type: "info", msg: "Scanning APK signature..." },
+        },
+        {
+          at: 3800,
+          pct: 60,
+          text: "APK sạch — Không virus!",
+          sub: "VirusTotal · 0/72 threats detected",
+          log: { type: "ok", msg: "Security scan PASSED. 0 threats found." },
+        },
+        {
+          at: 4600,
+          pct: 72,
+          text: "Đang chuẩn bị file tải...",
+          sub: "Đóng gói NC TOOLS · ~24 MB",
+          log: { type: "info", msg: "Preparing download package..." },
+        },
+        {
+          at: 5400,
+          pct: 83,
+          text: "Tạo link tải riêng cho bạn...",
+          sub: "Link có hiệu lực 10 phút",
+          log: {
+            type: "info",
+            msg: "Generating personalized download token...",
+          },
+        },
+        {
+          at: 6200,
+          pct: 93,
+          text: "Xác nhận danh tính người dùng...",
+          sub: "Cần xác minh trước khi tải",
+          log: {
+            type: "warn",
+            msg: "Identity verification required before release.",
+          },
+        },
+        {
+          at: 7000,
+          pct: 100,
+          text: "Sẵn sàng! Xác minh ngay ↓",
+          sub: "Hoàn thành nhiệm vụ để nhận file",
+          log: { type: "ok", msg: "Download ready. Complete tasks to unlock." },
+        },
+      ];
+      let dlTimers = [];
+
+      function startDownloadFlow() {
+        const overlay = document.getElementById("dl-loading-overlay");
+        overlay.classList.add("open");
+        document.body.style.overflow = "hidden";
+
+        // Reset UI loading
+        document.getElementById("dlProgressFill").style.width = "0%";
+        document.getElementById("dlProgressPct").textContent = "0%";
+        document.getElementById("dlProgressStatus").textContent =
+          "Đang xử lý...";
+        document.getElementById("dlStepText").textContent = "Đang khởi tạo...";
+        document.getElementById("dlStepSub").textContent =
+          "Vui lòng chờ trong giây lát";
+        document.getElementById("dlLog").innerHTML = "";
+        dlTimers.forEach(clearTimeout);
+        dlTimers = [];
+
+        DL_STEPS.forEach((step) => {
+          dlTimers.push(
+            setTimeout(() => {
+              document.getElementById("dlProgressFill").style.width =
+                step.pct + "%";
+              document.getElementById("dlProgressPct").textContent =
+                step.pct + "%";
+              document.getElementById("dlProgressStatus").textContent =
+                step.text;
+              document.getElementById("dlStepText").textContent = step.text;
+              document.getElementById("dlStepSub").textContent = step.sub;
+              const log = document.getElementById("dlLog");
+              const line = document.createElement("div");
+              line.className = `dl-log-line ${step.log.type}`;
+              line.textContent = step.log.msg;
+              log.appendChild(line);
+              while (log.children.length > 4) log.removeChild(log.firstChild);
+            }, step.at),
+          );
+        });
+
+        // Sau 8 giây: đóng overlay → mở modal nhiệm vụ
+        dlTimers.push(
+          setTimeout(() => {
+            overlay.classList.remove("open");
+            setTimeout(() => openTaskModal(), 450);
+          }, 8000),
+        );
+      }
+
+      // ==============================
+      // TASK MODAL
+      // ==============================
+      function openTaskModal() {
+        // Reset sạch mỗi lần mở — không nhớ phiên cũ
+        taskState = {};
+        renderTaskList();
+        document.getElementById("modal-overlay").classList.add("open");
+        document.body.style.overflow = "hidden";
+      }
+
+      function closeModal() {
+        document.getElementById("modal-overlay").classList.remove("open");
+        document.body.style.overflow = "";
+      }
+
+      document
+        .getElementById("modal-overlay")
+        .addEventListener("click", (e) => {
+          if (e.target === e.currentTarget) closeModal();
+        });
+
+      function renderTaskList() {
+        document.getElementById("taskList").innerHTML = tasks
+          .map(
+            (task) => `
+          <div class="task-item" id="task-${task.id}">
+            <div class="task-checkbox" id="check-${task.id}" onclick="toggleTask('${task.id}')"></div>
+            <div class="task-icon">${task.icon}</div>
+            <div class="task-text">
+              <div class="task-name">${task.name}</div>
+              <div class="task-desc">${task.desc}</div>
+            </div>
+            <a href="${task.link}" target="_blank" class="task-action" id="action-${task.id}" onclick="markTask('${task.id}')">
+              ${task.btnText}
+            </a>
+          </div>
+        `,
+          )
+          .join("");
+        updateProgress();
+      }
+
+      function markTask(id) {
+        // Tự động tick sau 800ms khi user bấm link
+        setTimeout(() => {
+          taskState[id] = true;
+          const item = document.getElementById(`task-${id}`);
+          const cb = document.getElementById(`check-${id}`);
+          const act = document.getElementById(`action-${id}`);
+          if (item) item.classList.add("done");
+          if (cb) cb.classList.add("checked");
+          if (act) {
+            act.classList.add("done-btn");
+            act.textContent = "✅ Xong";
+          }
+          updateProgress();
+        }, 5000);
+      }
+
+      function toggleTask(id) {
+        taskState[id] = !taskState[id];
+        const item = document.getElementById(`task-${id}`);
+        const cb = document.getElementById(`check-${id}`);
+        if (taskState[id]) {
+          item.classList.add("done");
+          cb.classList.add("checked");
+        } else {
+          item.classList.remove("done");
+          cb.classList.remove("checked");
+        }
+        updateProgress();
+      }
+
+      function updateProgress() {
+        const done = tasks.filter((t) => taskState[t.id]).length;
+        const total = tasks.length;
+        document.getElementById("progressText").textContent =
+          `${done}/${total}`;
+        document.getElementById("modalProgressFill").style.width =
+          (done / total) * 100 + "%";
+        const btn = document.getElementById("unlockBtn");
+        if (done === total) {
+          btn.disabled = false;
+          btn.classList.add("glow-active");
+          btn.innerHTML = "🔥 TẢI NC TOOLS NGAY!";
+        } else {
+          btn.disabled = true;
+          btn.classList.remove("glow-active");
+          btn.innerHTML = `🔒 Còn ${total - done} nhiệm vụ nữa`;
+        }
+      }
+
+      // ==============================
+      // TẢI — chuyển thẳng sang link
+      // ==============================
+      function handleDownload() {
+        launchConfetti();
+        setTimeout(() => window.open(APP_DOWNLOAD_URL, "_blank"), 600);
+      }
+
+      // ==============================
+      // CONFETTI
+      // ==============================
+      function launchConfetti() {
+        const c = document.getElementById("confettiContainer");
+        const cols = [
+          "#ff6a00",
+          "#ffd060",
+          "#ff9500",
+          "#00e5ff",
+          "#ff2244",
+          "#00dd88",
+        ];
+        for (let i = 0; i < 100; i++) {
+          const el = document.createElement("div");
+          el.className = "confetti-piece";
+          el.style.cssText = `left:${Math.random() * 100}%;background:${cols[Math.floor(Math.random() * cols.length)]};width:${4 + Math.random() * 8}px;height:${8 + Math.random() * 14}px;border-radius:${Math.random() > 0.5 ? "50%" : "2px"};animation-duration:${1.5 + Math.random() * 2.5}s;animation-delay:${Math.random() * 0.6}s;`;
+          c.appendChild(el);
+          setTimeout(() => el.remove(), 4000);
+        }
+      }
+    </script>
+
+    <script>
+      // Reset tasks when page reloads
+      window.addEventListener("load", () => {
+        try {
+          localStorage.clear();
+        } catch (e) {}
+      });
+    </script>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        const btn = document.getElementById("unlockBtn");
+        if (btn) {
+          btn.addEventListener("click", function () {
+            const overlay = document.getElementById("dl-loading-overlay");
+            if (overlay) {
+              overlay.classList.add("open");
+            }
+            setTimeout(function () {
+              window.location.href = "https://link4m.com/3pJHE";
+            }, 3000);
+          });
+        }
+      });
+    </script>
+  </body>
+</html>
